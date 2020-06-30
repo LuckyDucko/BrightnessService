@@ -1,50 +1,114 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text;
+
 using Android.Content;
 using Android.Hardware;
-using Android.Provider;
+using Android.OS;
 using Android.Runtime;
-using Java.Interop;
-using Plugin.CurrentActivity;
-using Xamarin.Forms;
-using BrightnessServiceExample.Interfaces;
-using BrightnessServiceExample;
 
-[assembly: Dependency(typeof(BrightnessService))]
-namespace BrightnessServiceExample.Android
+using Android.Provider;
+using Java.Interop;
+
+using Plugin.CurrentActivity;
+
+namespace Plugin.BrightnessService
 {
-    [Preserve(AllMembers = true)]
-    public class BrightnessService : IBrightness
+    /// <summary>
+    /// Interface for BrightnessService
+    /// </summary>
+    public class BrightnessServiceImplementation : IBrightnessService
     {
+        private List<Action> _tickActions;
+        public List<Action> TickActions
+        {
+            get => _tickActions;
+            set => SetValue(ref _tickActions, value);
+        }
+
+        private double _millisecondResolution;
+        public double MillisecondResolution
+        {
+            get => _millisecondResolution;
+            set => SetValue(ref _millisecondResolution, value);
+        }
+
+        private bool _active;
+        public bool Active
+        {
+            get => _active;
+            set => SetValue(ref _active, value);
+        }
+
         private double LastBrightness;
         LightDetector LightSensor = new LightDetector();
         private ulong MeanValue { get; set; }
         private ulong MeanCount { get; set; }
 
-        public BrightnessService()
+        public event Action BrightnessResolveTick;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        protected virtual void SetValue<T>(ref T backingField, T value, [CallerMemberName] string propertyName = null)
+        {
+            if (EqualityComparer<T>.Default.Equals(backingField, value))
+                return;
+            backingField = value;
+            OnPropertyChanged(propertyName);
+        }
+
+        static Handler s_handler;
+
+        public BrightnessServiceImplementation()
         {
             LastBrightness = 0;
             MeanValue = 1;
             MeanCount = 1;
+            Active = true;
+            MillisecondResolution = 100;
+            TickActions = new List<Action>();
+            UpdateBrightness();
+            BrightnessResolveTick += BrightnessService_Ticked;
+        }
+        private void BrightnessService_Ticked()
+        {
+            TickActions.AsParallel().ForAll((Action tickAction) =>
+            {
+                try
+                {
+                    BeginInvokeOnMainThread(() => tickAction.Invoke());
+                }
+                catch (Exception ex)
+                {
+                    //Console.WriteLine($"An error occurred when invoking a brightness Action: {ex.Message}\n{ex.StackTrace}");
+                }
+            });
         }
 
-        public bool BrightnessServiceActive()
+
+        public void Attach(Action brightnessServiceFunction)
         {
-            if (!Settings.System.CanWrite(CrossCurrentActivity.Current.AppContext))
-            {
-                Intent intent = new Intent(Settings.ActionManageWriteSettings);
-                intent.SetData(Android.Net.Uri.Parse("package:" + CrossCurrentActivity.Current.Activity.PackageName));
-                CrossCurrentActivity.Current.Activity.StartActivity(intent);
-                return false;
-            }
-            else
-            {
-                return true;
-            }
+            Active = false;
+            TickActions.Add(brightnessServiceFunction);
+            Active = true;
+            UpdateBrightness();
+        }
+
+        public List<Action> Attached()
+        {
+            return TickActions;
         }
 
         public bool BrightnessChanged()
         {
-            if (LastBrightness.ToString() != CheckBrightness().ToString())
+            if (LastBrightness != CheckBrightness())
             {
                 LastBrightness = CheckBrightness();
                 return true;
@@ -59,14 +123,17 @@ namespace BrightnessServiceExample.Android
         {
             try
             {
-                if (Settings.System.GetInt(CrossCurrentActivity.Current.AppContext.ContentResolver, Settings.System.ScreenBrightnessMode) == (int)ScreenBrightness.ModeAutomatic)
-                {
-                    return double.Parse((LightSensor.lastLightValue / LightSensor._sensorManager.GetDefaultSensor(SensorType.Light).MaximumRange).ToString());
-                }
-                else
-                {
-                    return double.Parse(Settings.System.GetInt(CrossCurrentActivity.Current.AppContext.ContentResolver, Settings.System.ScreenBrightness).ToString()) / 255.0;
-                }
+                //if (Settings.System.GetInt(CrossCurrentActivity.Current.AppContext.ContentResolver, Settings.System.ScreenBrightnessMode) == (int)ScreenBrightness.ModeAutomatic)
+                //{
+                //    var stuff = NormaliseBrightness((float)double.Parse((LightSensor.lastLightValue / LightSensor._sensorManager.GetDefaultSensor(SensorType.Light).MaximumRange).ToString()));
+                //    var stuff2 = double.Parse(Settings.System.GetInt(CrossCurrentActivity.Current.AppContext.ContentResolver, Settings.System.ScreenBrightness).ToString()) / 255.0;
+                //    Console.WriteLine(stuff.ToString());
+                //    return stuff;
+                //}
+                //else
+                //{
+                return double.Parse(Settings.System.GetInt(CrossCurrentActivity.Current.AppContext.ContentResolver, Settings.System.ScreenBrightness).ToString()) / 255.0;
+                //}
 
             }
             catch (Exception)
@@ -75,6 +142,71 @@ namespace BrightnessServiceExample.Android
             }
         }
 
+        public void OverwriteFunctions(List<Action> brightnessServiceFunctions)
+        {
+            Active = false;
+            TickActions = brightnessServiceFunctions;
+            Active = true;
+            UpdateBrightness();
+        }
+
+        public void OverwriteRefreshResolution(double millisecondResolution)
+        {
+            Active = false;
+            MillisecondResolution = millisecondResolution;
+            Active = true;
+            UpdateBrightness();
+        }
+
+        private bool BrightnessServiceActive()
+        {
+            if (!Settings.System.CanWrite(CrossCurrentActivity.Current.AppContext))
+            {
+                Intent intent = new Intent(Settings.ActionManageWriteSettings);
+                intent.SetData(Android.Net.Uri.Parse("package:" + CrossCurrentActivity.Current.Activity.PackageName));
+                CrossCurrentActivity.Current.Activity.StartActivity(intent);
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        private void UpdateBrightness()
+        {
+
+            StartTimer(TimeSpan.FromMilliseconds(MillisecondResolution), () =>
+            {
+                BrightnessResolveTick.Invoke();
+                return Active;
+            });
+
+        }
+
+        private void BeginInvokeOnMainThread(Action action)
+        {
+
+            if (s_handler == null || s_handler.Looper != Looper.MainLooper)
+            {
+                s_handler = new Handler(Looper.MainLooper);
+            }
+
+            s_handler.Post(action);
+        }
+
+        private void StartTimer(TimeSpan interval, Func<bool> callback)
+        {
+            var handler = new Handler(Looper.MainLooper);
+            handler.PostDelayed(() =>
+            {
+                if (callback())
+                    StartTimer(interval, callback);
+
+                handler.Dispose();
+                handler = null;
+            }, (long)interval.TotalMilliseconds);
+        }
         private float NormaliseBrightness(float lightReading)
         {
             MeanValue += (ulong)lightReading;
@@ -329,8 +461,8 @@ namespace BrightnessServiceExample.Android
             {254, 100},
             {255, 100},
             {255, 100}};
-    }
 
+    }
     public class LightDetector : Java.Lang.Object, ISensorEventListener
     {
         public float lastLightValue { get; set; }
@@ -358,12 +490,12 @@ namespace BrightnessServiceExample.Android
 
         public void SetJniIdentityHashCode(int value)
         {
-            throw new NotImplementedException();
+
         }
 
         public void SetPeerReference(JniObjectReference reference)
         {
-            throw new NotImplementedException();
+
         }
 
         public void SetJniManagedPeerState(JniManagedPeerStates value)
@@ -392,4 +524,3 @@ namespace BrightnessServiceExample.Android
         }
     }
 }
-
