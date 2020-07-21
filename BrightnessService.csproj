@@ -1,83 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="MSBuild.Sdk.Extras/2.0.54">
-
-  <PropertyGroup>
-    <!--Work around so the conditions work below-->
-    <TargetFrameworks></TargetFrameworks>
-    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">netstandard1.0;netstandard2.0;Xamarin.iOS10;MonoAndroid90;uap10.0.16299</TargetFrameworks>
-    <TargetFrameworks Condition=" '$(OS)' != 'Windows_NT' ">netstandard1.0;netstandard2.0;Xamarin.iOS10;MonoAndroid90</TargetFrameworks>
-    <!--Feel free to add as many targets as you need below
+	<PropertyGroup>
+		<!--Work around so the conditions work below-->
+		<TargetFrameworks>
+		</TargetFrameworks>
+		<TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">netstandard1.0;netstandard2.0;Xamarin.iOS10;MonoAndroid90;uap10.0.16299</TargetFrameworks>
+		<TargetFrameworks Condition=" '$(OS)' != 'Windows_NT' ">netstandard1.0;netstandard2.0;Xamarin.iOS10;MonoAndroid90</TargetFrameworks>
+		<!--Feel free to add as many targets as you need below
     netstandard1.0;netstandard2.0;MonoAndroid90;Xamarin.iOS10;uap10.0.16299;Xamarin.TVOS10;Xamarin.WatchOS10;Xamarin.Mac20;Tizen40
     For UWP update the version number with a version number you have installed.
     -->
-    <AssemblyName>Plugin.BrightnessService</AssemblyName>
-    <RootNamespace>Plugin.BrightnessService</RootNamespace>
-    <PackageId>Plugin.BrightnessService</PackageId>
-    
-    <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <AssemblyFileVersion>1.0.0.0</AssemblyFileVersion>
-    <Version>1.0.0.0</Version>
-    <PackageVersion>1.0.0.0</PackageVersion>
-    <PackOnBuild>true</PackOnBuild>
-    <NeutralLanguage>en</NeutralLanguage>
-    <LangVersion>default</LangVersion>
-    <DefineConstants>$(DefineConstants);</DefineConstants>
-    
-    <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
-    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
-
-    <LangVersion>latest</LangVersion>
-    <DebugType>portable</DebugType>
-    
-    <!--TODO: Fill these in-->
-    <PackageLicenseUrl>LINK TO LICENSE</PackageLicenseUrl>
-    <PackageProjectUrl>LINK TO PROJECT</PackageProjectUrl>
-    <RepositoryUrl>LINK TO PROJECT</RepositoryUrl>
-    <PackageReleaseNotes>RELEASE NOTES</PackageReleaseNotes>
-    <PackageIconUrl>ICON URL</PackageIconUrl>
-    <PackageTags>xamarin, windows, ios, android, xamarin.forms, plugin, BrightnessService</PackageTags>
-    
-    <Title>BrightnessService Plugin for Xamarin and Windows</Title>
-    <Summary>Summary of nuget</Summary>
-    <Description>Plugin Description</Description>
-    
-    
-    <Owners>YOU</Owners>
-    <Authors>YOU</Authors>
-    <Copyright>Copyright 2019</Copyright>
-
-    <!--When built in 2019 will remove extra references on pack-->
-    <DisableExtraReferences>true</DisableExtraReferences>
-    
-    <ReleaseVersion>0.2</ReleaseVersion>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)'=='Debug' ">
-    <DebugSymbols>true</DebugSymbols>
-    <GenerateDocumentationFile>false</GenerateDocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)'=='Release' ">
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Include="**\*.shared.cs" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
-  </ItemGroup>
-
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">
-    <Compile Include="**\*.android.cs" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.iOS')) ">
-    <Compile Include="**\*.apple.cs" />
-  </ItemGroup>
-
-  <!--Additional item groups-->
-  <!--
+		<AssemblyName>Plugin.BrightnessService</AssemblyName>
+		<RootNamespace>Plugin.BrightnessService</RootNamespace>
+		<PackageId>Plugin.BrightnessService</PackageId>
+		<Product>$(AssemblyName) ($(TargetFramework))</Product>
+		<AssemblyVersion>1.0.0.0</AssemblyVersion>
+		<AssemblyFileVersion>1.0.0.0</AssemblyFileVersion>
+		<Version>1.0.0.0</Version>
+		<PackageVersion>0.0.1.0</PackageVersion>
+		<PackOnBuild>true</PackOnBuild>
+		<NeutralLanguage>en-AU</NeutralLanguage>
+		<LangVersion>default</LangVersion>
+		<DefineConstants>$(DefineConstants);</DefineConstants>
+		<UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
+		<EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+		<LangVersion>latest</LangVersion>
+		<DebugType>portable</DebugType>
+		<!--TODO: Fill these in-->
+		<PackageProjectUrl>https://github.com/LuckyDucko/BrightnessService</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/LuckyDucko/BrightnessService</RepositoryUrl>
+		<PackageReleaseNotes>iOS Support is working well
+Android Support is currently axperimental due to Android light sensors acting unusual. Future code will setup a form of calibration
+</PackageReleaseNotes>
+		<PackageTags>xamarin, ios, android, xamarin.forms, plugin, BrightnessService</PackageTags>
+		<Title>BrightnessService</Title>
+		<Summary>A quick plugin to allow user defined functions that react to changes in device brightness</Summary>
+		<Description>Device Brightness, and the ability to attach actions to its changes</Description>
+		<Owners>Tyson Hooker</Owners>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<Authors>Tyson Hooker</Authors>
+		<Copyright>Copyright 2020</Copyright>
+		<!--When built in 2019 will remove extra references on pack-->
+		<DisableExtraReferences>true</DisableExtraReferences>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)'=='Debug' ">
+		<DebugSymbols>true</DebugSymbols>
+		<GenerateDocumentationFile>false</GenerateDocumentationFile>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)'=='Release' ">
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+	</PropertyGroup>
+	<ItemGroup>
+		<Compile Include="**\*.shared.cs" />
+	</ItemGroup>
+	<ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
+	</ItemGroup>
+	<ItemGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">
+		<Compile Include="**\*.android.cs" />
+	</ItemGroup>
+	<ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.iOS')) ">
+		<Compile Include="**\*.apple.cs" />
+	</ItemGroup>
+	<PropertyGroup>
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+	</PropertyGroup>
+	<!--Additional item groups-->
+	<!--
   <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.TVOS')) ">
     <Compile Include="**\*.tvos.cs" />
   </ItemGroup>
@@ -106,7 +96,7 @@
     <Compile Include="**\*.dotnet.cs" />
   </ItemGroup>
   -->
-  <ItemGroup Condition="'$(TargetFramework)' == 'MonoAndroid90'">
-    <PackageReference Include="Plugin.CurrentActivity" Version="2.1.0.4" />
-  </ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)' == 'MonoAndroid90'">
+		<PackageReference Include="Plugin.CurrentActivity" Version="2.1.0.4" />
+	</ItemGroup>
 </Project>

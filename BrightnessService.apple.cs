@@ -149,7 +149,7 @@ namespace Plugin.BrightnessService
 				}
 				catch (Exception ex)
 				{
-					//Console.WriteLine($"An error occurred when invoking a brightness Action: {ex.Message}\n{ex.StackTrace}");
+					Console.WriteLine($"An error occurred when invoking a brightness Action: {ex.Message}\n{ex.StackTrace}");
 				}
 			});
 		}
