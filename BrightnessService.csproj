@@ -17,7 +17,7 @@
 		<AssemblyVersion>1.0.0.0</AssemblyVersion>
 		<AssemblyFileVersion>1.0.0.0</AssemblyFileVersion>
 		<Version>1.0.0.0</Version>
-		<PackageVersion>0.0.1.0</PackageVersion>
+		<PackageVersion>0.0.2.0</PackageVersion>
 		<PackOnBuild>true</PackOnBuild>
 		<NeutralLanguage>en-AU</NeutralLanguage>
 		<LangVersion>default</LangVersion>
@@ -29,18 +29,15 @@
 		<!--TODO: Fill these in-->
 		<PackageProjectUrl>https://github.com/LuckyDucko/BrightnessService</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/LuckyDucko/BrightnessService</RepositoryUrl>
-		<PackageReleaseNotes>iOS Support is working well
-Android Support is currently axperimental due to Android light sensors acting unusual. Future code will setup a form of calibration
-</PackageReleaseNotes>
+		<PackageReleaseNotes>Moved the android LightSensor to now provide its results when the 
+AndroidLightSensorDirect bool is set to true</PackageReleaseNotes>
 		<PackageTags>xamarin, ios, android, xamarin.forms, plugin, BrightnessService</PackageTags>
 		<Title>BrightnessService</Title>
 		<Summary>A quick plugin to allow user defined functions that react to changes in device brightness</Summary>
-		<Description>Device Brightness, and the ability to attach actions to its changes</Description>
-		<Owners>Tyson Hooker</Owners>
+		<Description>React to brightness changes in real-time </Description>
+		<Owners>LuckyDucko</Owners>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<Authors>Tyson Hooker</Authors>
-		<Copyright>Copyright 2020</Copyright>
-		<!--When built in 2019 will remove extra references on pack-->
 		<DisableExtraReferences>true</DisableExtraReferences>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(Configuration)'=='Debug' ">
@@ -96,6 +93,12 @@ Android Support is currently axperimental due to Android light sensors acting un
     <Compile Include="**\*.dotnet.cs" />
   </ItemGroup>
   -->
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+	  <NoStdLib>false</NoStdLib>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+	  <NoStdLib>false</NoStdLib>
+	</PropertyGroup>
 	<ItemGroup Condition="'$(TargetFramework)' == 'MonoAndroid90'">
 		<PackageReference Include="Plugin.CurrentActivity" Version="2.1.0.4" />
 	</ItemGroup>

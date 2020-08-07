@@ -9,6 +9,7 @@ namespace Plugin.BrightnessService
 		public List<Action> TickActions { get; set; }
 		public double MillisecondResolution { get; set; }
 		public bool Active { get; set; }
+		public bool AndroidLightSensorDirect { get; set; }
 		public event Action BrightnessResolveTick;
 
 		public double CheckBrightness();

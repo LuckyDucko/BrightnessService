@@ -16,7 +16,6 @@ namespace Plugin.BrightnessService
 	/// </summary>
 	public class BrightnessServiceImplementation : IBrightnessService
 	{
-
 		private List<Action> _tickActions;
 		public List<Action> TickActions
 		{
@@ -37,6 +36,7 @@ namespace Plugin.BrightnessService
 			get => _active;
 			set => SetValue(ref _active, value);
 		}
+		public bool AndroidLightSensorDirect { get; set; }
 
 		private double LastBrightness = 0;
 
@@ -55,8 +55,6 @@ namespace Plugin.BrightnessService
 			backingField = value;
 			OnPropertyChanged(propertyName);
 		}
-
-
 
 		public BrightnessServiceImplementation()
 		{
