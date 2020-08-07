@@ -67,44 +67,44 @@ CrossBrightnessService.Current.Attach(() =>
 
 Plugin.BrightnessService allows access through the `IBrightnessService` interface, which has the following members/functions available
 
-`public List<Action> TickActions { get; set; }`
+**`public List<Action> TickActions { get; set; }`**
 > This is the TickActions that will be executed in parallel on a timed basis, with the timing depending on `MillisecondResolution`. 
 *All Functions are invoked on the main thread.*
 While direct access through the setter is possible, it is recommended you use `Attach`, `Attached` and `OverWriteFunctions` for changing its values
 
 
-`public double MillisecondResolution { get; set; }`
+**`public double MillisecondResolution { get; set; }`**
 > This is the speed in which the timer will wait before executing `TickActions` in parallel. 
 While direct access through the setter is possible, it is recommended you use `OverwriteRefreshResolution` for changing its value
 
-`public bool Active { get; set; }`
+**`public bool Active { get; set; }`**
 > This determines if the timer is active or not.
 
-`public bool AndroidLightSensorDirect { get; set; }`
+**`public bool AndroidLightSensorDirect { get; set; }`**
 > This determines if Android will use the screenbrightness of the device (safe), or the direct readouts from the light sensor (be prepared for calibration difficulties.). 
 
-`public event Action BrightnessResolveTick;`
+**`public event Action BrightnessResolveTick;`**
 > This is what is invoked by the timer. Feel free to attach other things to run on the exact same timing as the brightness service. However, this also serves for how the tickactions get executed. care recommended.
 
 
-`public double CheckBrightness();`
+**`public double CheckBrightness();`**
 > This provides the brightness readout. if not using the Android direct light sensor, will be within 0-255
 
-`public bool BrightnessChanged();`
+**`public bool BrightnessChanged();`**
 > Provides a more manual approach to checking brightness. First call will 'set' the last brightness
 each subsequent call will check against the last brightness recorded against the current light reading, if it is different, it will return true and update the last brightness to the current light reading
 
 
-`public List<Action> Attached();`
+**`public List<Action> Attached();`**
 >Returns all functions attached and running on `TickActions`
 
-`public void Attach(Action brightnessServiceFunction);`
+**`public void Attach(Action brightnessServiceFunction);`**
 > Attaches a new function ontop of `TickActions`, briefly stopping and restarting the timer when doing so. 
 
-`public void OverwriteFunctions(List<Action> brightnessServiceFunctions);`
+**`public void OverwriteFunctions(List<Action> brightnessServiceFunctions);`**
 > Overwrites `TickFunctions` with the supplied functions, briefly stopping and restarting the timer when doing so. 
 
-`public void OverwriteRefreshResolution(double millisecondResolution);`
+**`public void OverwriteRefreshResolution(double millisecondResolution);`**
 >Overwrites the refresh resolution to the supplied values, briefly stopping and restarting the timer when doing so. 
 
 
