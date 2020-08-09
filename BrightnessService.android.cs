@@ -47,11 +47,29 @@ namespace Plugin.BrightnessService
 		public bool AndroidLightSensorDirect
 		{
 			get => _androidLightSensorDirect;
-			set => SetValue(ref _androidLightSensorDirect, value);
+			set
+			{
+				if (value && LightSensor == null)
+				{
+					try
+					{
+						LightSensor = new LightDetector();
+						SetValue(ref _androidLightSensorDirect, true);
+					}
+					catch (Exception ex)
+					{
+						SetValue(ref _androidLightSensorDirect, false);
+					}
+				}
+				else
+				{
+					SetValue(ref _androidLightSensorDirect, value);
+				}
+			}
 		}
 
 		private double LastBrightness;
-		LightDetector LightSensor = new LightDetector();
+		LightDetector LightSensor;
 
 		public event Action BrightnessResolveTick;
 
@@ -199,14 +217,8 @@ namespace Plugin.BrightnessService
 
 		public LightDetector()
 		{
-			try
-			{
-				lastLightValue = 1F;
-				_sensorManager.RegisterListener(this, _sensorManager.GetDefaultSensor(SensorType.Light), SensorDelay.Ui);
-			}
-			catch (Exception ex)
-			{
-			}
+			lastLightValue = 1F;
+			_sensorManager.RegisterListener(this, _sensorManager.GetDefaultSensor(SensorType.Light), SensorDelay.Ui);
 		}
 
 
@@ -229,12 +241,11 @@ namespace Plugin.BrightnessService
 
 		public void SetJniManagedPeerState(JniManagedPeerStates value)
 		{
-			throw new NotImplementedException();
 		}
 
 		public void DisposeUnlessReferenced()
 		{
-			throw new NotImplementedException();
+			_sensorManager.Dispose();
 		}
 
 		public void Disposed()
@@ -244,12 +255,10 @@ namespace Plugin.BrightnessService
 
 		public void Finalized()
 		{
-			throw new NotImplementedException();
 		}
 
 		public void OnAccuracyChanged(Sensor sensor, [GeneratedEnum] SensorStatus accuracy)
 		{
-
 		}
 	}
 }
